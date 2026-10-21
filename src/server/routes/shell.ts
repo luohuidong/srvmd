@@ -38,7 +38,7 @@ export async function respondShell(config: ResolvedConfig, status: number, reque
   const template = await readShell(config.webRoot);
   if (!template) {
     return textResponse(
-      `serve-markdown: web build not found at ${join(config.webRoot, "index.html")}.\nRun \`bun run build\` first.`,
+      `srvmd: web build not found at ${join(config.webRoot, "index.html")}.\nRun \`bun run build\` first.`,
       503,
       request.method,
       config.cors,

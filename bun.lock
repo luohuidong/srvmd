@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "serve-markdown",
+      "name": "srvmd",
       "dependencies": {
         "commander": "^15.0.0",
         "mermaid": "^12.2.0",

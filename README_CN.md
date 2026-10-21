@@ -1,11 +1,11 @@
-# serve-markdown
+# srvmd
 
 [English](./README.md) | 中文
 
 基于 Bun 的静态文件服务器：像 `serve` 一样托管目录，但浏览 `.md` 文件时会实时渲染成 HTML，文件保存后浏览器自动刷新。
 
 ```bash
-bunx serve-markdown ./docs
+bunx srvmd ./docs
 ```
 
 ## 特性
@@ -28,25 +28,25 @@ bunx serve-markdown ./docs
 
 ```bash
 # 全局安装
-bun add -g serve-markdown
+bun add -g srvmd
 
 # 或者直接运行
-bunx serve-markdown ./docs
+bunx srvmd ./docs
 ```
 
 ## 使用
 
 ```bash
-serve-markdown [directory] [options]
+srvmd [directory] [options]
 ```
 
 常用示例：
 
 ```bash
-serve-markdown ./docs                  # 在 3000 端口托管 ./docs
-serve-markdown . -l 8080 --open        # 指定端口并打开浏览器
-serve-markdown ./public -s --cors      # SPA 模式并开启 CORS
-serve-markdown ./docs --theme dark     # 默认深色主题
+srvmd ./docs                  # 在 3000 端口托管 ./docs
+srvmd . -l 8080 --open        # 指定端口并打开浏览器
+srvmd ./public -s --cors      # SPA 模式并开启 CORS
+srvmd ./docs --theme dark     # 默认深色主题
 ```
 
 ### CLI 参数
@@ -118,7 +118,7 @@ shared -> nothing
 
 `src/server/` 只能导入 `src/server/` 和 `src/shared/`；`web/` 只能导入 `src/shared/` 和自身。`test/architecture.test.ts` 会扫描 `.ts` 和 `.svelte` 的 import 来校验这些边界。
 
-新代码统一由 `src/cli/index.ts` 启动，`serve-markdown` 和 `serve-md` 都指向这个入口。目录职责、API 契约和功能落点见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
+新代码统一由 `src/cli/index.ts` 启动，命令名固定为 `srvmd`。目录职责、API 契约和功能落点见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
 
 ## 工作原理
 

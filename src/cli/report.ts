@@ -27,7 +27,7 @@ function localNetworkUrls(port: number): string[] {
 export function printStartupReport(report: StartupReport): void {
   const useColor = process.stdout.isTTY && !process.env.NO_COLOR;
   const lines = [
-    color(useColor, "1", "serve-markdown"),
+    color(useColor, "1", "srvmd"),
     `  Serving   ${report.root}`,
     `  Local     ${color(useColor, "36", report.url)}`,
   ];

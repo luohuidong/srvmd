@@ -230,7 +230,7 @@ bun pm pack          # 验证发布产物包含 web/dist
 - `config / resolve / markdown / directory / live` 全部位于 `src/server/`，新服务器只导入 `server/` 和 `shared/`。
 - 新服务器提供 `/__api/page/*`、Svelte 壳、`/__app/*` 静态资源和 Mermaid 运行时。
 - 新 Svelte 应用支持文档页、目录页、错误页、主题切换、加载态、live reload、Mermaid 图表和查看器。
-- `serve-markdown` / `serve-md` 指向 `src/cli/index.ts`。
+- 命令名 `srvmd` 指向 `src/cli/index.ts`。
 - parity 已覆盖 clean URL、`?raw`、目录重定向、静态文件、ETag/304/Range、CORS、隐藏文件、错误状态、`-s`、`--no-live`、`--no-mermaid`、`--no-clean-urls`、`--no-directory-listing`、`--theme`、`--html`、`--highlight`、`--cors`。
 - MermaidDiagram / MermaidViewer 已覆盖渲染、错误、点击/键盘打开、缩放、Fit、关闭和主题重绘。
 - Playwright E2E 的 5 个 smoke 用例已在 WSL2 + Docker 中全部通过；宿主机缺少 Chromium 系统库时，可继续用 Docker 运行。

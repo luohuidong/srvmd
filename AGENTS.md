@@ -4,7 +4,7 @@
 
 ## 项目概览
 
-`serve-markdown` 是一个本地/局域网使用的静态文件服务器：托管目录，按需把 Markdown 渲染成 HTML，并通过 WebSocket 实时刷新。
+`srvmd` 是一个本地/局域网使用的静态文件服务器：托管目录，按需把 Markdown 渲染成 HTML，并通过 WebSocket 实时刷新。
 
 - 运行时：Bun，入口 `src/cli/index.ts`。
 - 页面：Svelte 5，源码在 `web/`，构建产物在 `web/dist/`。
@@ -171,7 +171,7 @@ test/
 
 ```bash
 bun pm pack
-# 在临时目录安装 tarball，确认 serve-markdown --version 和启动正常
+# 在临时目录安装 tarball，确认 srvmd --version 和启动正常
 ```
 
 ## WSL 与 E2E

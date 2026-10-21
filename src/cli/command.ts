@@ -12,7 +12,7 @@ function collect(value: string, previous: string[] = []): string[] {
 
 export function createCommand(): Command {
   return new Command()
-    .name("serve-markdown")
+    .name("srvmd")
     .description("A static file server that renders Markdown, with live reload.")
     .usage("[directory] [options]")
     .argument("[directory]", "directory to serve", ".")

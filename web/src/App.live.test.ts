@@ -58,7 +58,7 @@ beforeEach(() => {
   mocks.fetchPage.mockReset();
   mocks.connectLive.mockReset();
   mocks.reload = undefined;
-  document.title = "serve-markdown";
+  document.title = "srvmd";
 });
 
 describe("App live reload", () => {

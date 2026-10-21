@@ -2,7 +2,7 @@ import { CONFIG_ELEMENT_ID } from "@shared/constants.ts";
 import type { AppConfig } from "@shared/contracts.ts";
 
 const FALLBACK: AppConfig = {
-  rootLabel: "serve-markdown",
+  rootLabel: "srvmd",
   version: "0.0.0",
   theme: "auto",
   live: false,

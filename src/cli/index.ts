@@ -8,7 +8,7 @@ async function main(): Promise<void> {
 
 main().catch(error => {
   const message = error instanceof Error ? error.message : String(error);
-  process.stderr.write(`serve-markdown: ${message}\n`);
+  process.stderr.write(`srvmd: ${message}\n`);
   if (/EADDRINUSE|address already in use/i.test(message)) {
     process.stderr.write("Hint: choose another port with --listen.\n");
   }

@@ -1,12 +1,12 @@
 ---
 title: Welcome
-description: serve-markdown demo
+description: srvmd demo
 lang: en
 ---
 
 # Welcome
 
-This page is rendered from Markdown by `serve-markdown`, then live-reloaded whenever the file changes on disk.
+This page is rendered from Markdown by `srvmd`, then live-reloaded whenever the file changes on disk.
 
 Try editing this file while the server is running.
 

@@ -3,5 +3,5 @@
 </script>
 
 <footer class="footer">
-  Rendered by serve-markdown · {appConfig.rootLabel}
+  Rendered by srvmd · {appConfig.rootLabel}
 </footer>

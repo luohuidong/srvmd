@@ -24,10 +24,10 @@
 
   const title = $derived.by(() => {
     if (state.status === "error") return String(state.code);
-    if (state.status !== "ready") return "serve-markdown";
+    if (state.status !== "ready") return "srvmd";
     if (state.page.kind === "document") return state.page.title;
     if (state.page.kind === "directory") return state.page.heading;
-    return "serve-markdown";
+    return "srvmd";
   });
 
   function applyLang(page: PagePayload): void {

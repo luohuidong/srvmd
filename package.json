@@ -1,11 +1,10 @@
 {
-  "name": "serve-markdown",
+  "name": "srvmd",
   "version": "0.1.0",
   "description": "Static file server with live-reloading Markdown rendering, built on Bun",
   "type": "module",
   "bin": {
-    "serve-markdown": "src/cli/index.ts",
-    "serve-md": "src/cli/index.ts"
+    "srvmd": "src/cli/index.ts"
   },
   "files": [
     "src",
@@ -38,7 +37,9 @@
     "markdown",
     "static-server",
     "live-reload",
-    "preview"
+    "preview",
+    "serve-markdown",
+    "md"
   ],
   "license": "MIT",
   "engines": {

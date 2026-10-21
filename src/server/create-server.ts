@@ -30,7 +30,7 @@ export async function startServer(options: ServeMarkdownOptions = {}): Promise<R
     development: true,
     idleTimeout: 255,
     error: (cause: Error) => {
-      console.error("[serve-markdown]", cause);
+      console.error("[srvmd]", cause);
       return textResponse(cause.message, 500, "GET", config.cors);
     },
   } as const;

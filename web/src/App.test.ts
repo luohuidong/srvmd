@@ -40,7 +40,7 @@ const directoryPage: DirectoryPayload = {
 
 beforeEach(() => {
   mocks.fetchPage.mockReset();
-  document.title = "serve-markdown";
+  document.title = "srvmd";
 });
 
 describe("App", () => {

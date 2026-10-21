@@ -54,7 +54,7 @@ export async function createHighlighterService(): Promise<Highlighter | null> {
       langs: PRELOADED_LANGUAGES,
     });
   } catch (error) {
-    console.warn(`[serve-markdown] syntax highlighting disabled: ${error instanceof Error ? error.message : error}`);
+    console.warn(`[srvmd] syntax highlighting disabled: ${error instanceof Error ? error.message : error}`);
     return null;
   }
 }

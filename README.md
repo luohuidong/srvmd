@@ -1,11 +1,11 @@
-# serve-markdown
+# srvmd
 
 English | [中文](./README_CN.md)
 
 A static file server built on Bun: host a directory like `serve`, but `.md` files are rendered as HTML on demand, and the browser reloads automatically when files change.
 
 ```bash
-bunx serve-markdown ./docs
+bunx srvmd ./docs
 ```
 
 ## Features
@@ -28,25 +28,25 @@ bunx serve-markdown ./docs
 
 ```bash
 # Global install
-bun add -g serve-markdown
+bun add -g srvmd
 
 # Or run directly
-bunx serve-markdown ./docs
+bunx srvmd ./docs
 ```
 
 ## Usage
 
 ```bash
-serve-markdown [directory] [options]
+srvmd [directory] [options]
 ```
 
 Common examples:
 
 ```bash
-serve-markdown ./docs                  # Host ./docs on port 3000
-serve-markdown . -l 8080 --open        # Use a specific port and open the browser
-serve-markdown ./public -s --cors      # SPA mode with CORS enabled
-serve-markdown ./docs --theme dark     # Dark theme by default
+srvmd ./docs                  # Host ./docs on port 3000
+srvmd . -l 8080 --open        # Use a specific port and open the browser
+srvmd ./public -s --cors      # SPA mode with CORS enabled
+srvmd ./docs --theme dark     # Dark theme by default
 ```
 
 ### CLI options
@@ -118,7 +118,7 @@ shared -> nothing
 
 `src/server/` may only import `src/server/` and `src/shared/`; `web/` may only import `src/shared/` and itself. `test/architecture.test.ts` scans imports in `.ts` and `.svelte` files to enforce these boundaries.
 
-The CLI entry point is `src/cli/index.ts`; both `serve-markdown` and `serve-md` point to it. See [ARCHITECTURE.md](./ARCHITECTURE.md) (Chinese) for directory responsibilities, the API contract, and where to add features.
+The CLI entry point is `src/cli/index.ts`, exposed as the `srvmd` command. See [ARCHITECTURE.md](./ARCHITECTURE.md) (Chinese) for directory responsibilities, the API contract, and where to add features.
 
 ## How it works
 
