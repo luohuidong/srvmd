@@ -176,7 +176,16 @@ bun pm pack
 
 ## WSL 与 E2E
 
-当前开发环境是 WSL2。headless Playwright 不需要 X server，但宿主机可能缺少 Chromium 系统库。没有 sudo 依赖时，用 Docker：
+当前开发环境是 WSL2。headless Playwright 不需要 X server，但宿主机缺少 Chromium 系统库（如 `libnspr4.so`、`libnss3.so`、`libasound.so.2`），所以 **E2E 必须在 Docker 内运行**。直接在宿主机执行 `bun run test:e2e` 必然失败。
+
+宿主机直接运行时的典型报错如下。这是环境问题，不是代码回归，不要据此排查代码：
+
+```plaintext
+chrome-headless-shell: error while loading shared libraries: libnspr4.so: cannot open shared object file: No such file or directory
+Error: browserType.launch: Target page, context or browser has been closed
+```
+
+用 Docker 跑完整 E2E：
 
 ```bash
 docker run --rm --ipc=host \
@@ -185,7 +194,13 @@ docker run --rm --ipc=host \
   bash -lc 'bun install --frozen-lockfile && bunx playwright install --with-deps chromium && bun run test:e2e'
 ```
 
-容器可能以 root 写入 `web/dist/` 和 `test-results/`；出现权限问题时用 Docker `chown`/`rm` 清理，或在宿主机重新 `bun run build`。
+命令要点：
+
+- `--ipc=host` 避免 Chromium 在容器内因共享内存不足崩溃。
+- `-v /work/node_modules` 复用宿主机依赖，避免容器内重复安装。
+- `bunx playwright install --with-deps chromium` 会连同系统依赖一起安装，这是宿主机缺库时的关键一步。
+- 容器以 root 运行，可能写出 root 属主的 `web/dist/` 和 `test-results/`；出现权限问题时用 Docker `chown`/`rm` 清理，或在宿主机重新 `bun run build`。
+- 失败后残留的 `test-results/`、`playwright-report/` 可直接删除，两者都已在 `.gitignore` 中。
 
 ## 代码风格
 
@@ -208,4 +223,4 @@ bun run test
 bun run build
 ```
 
-涉及真实页面导航、Mermaid 查看器、主题持久化或静态资源时，再运行 E2E。涉及发布配置时再运行 `bun pm pack` 并检查 tarball。
+涉及真实页面导航、Mermaid 查看器、主题持久化或静态资源时，再运行 E2E，用 Docker 方式执行（见上文 WSL 与 E2E）。涉及发布配置时再运行 `bun pm pack` 并检查 tarball。
