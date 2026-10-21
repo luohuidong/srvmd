@@ -1,85 +1,87 @@
 # serve-markdown
 
-基于 Bun 的静态文件服务器：像 `serve` 一样托管目录，但浏览 `.md` 文件时会实时渲染成 HTML，文件保存后浏览器自动刷新。
+English | [中文](./README_CN.md)
+
+A static file server built on Bun: host a directory like `serve`, but `.md` files are rendered as HTML on demand, and the browser reloads automatically when files change.
 
 ```bash
 bunx serve-markdown ./docs
 ```
 
-## 特性
+## Features
 
-- 静态文件服务：自动 `Content-Type`、`ETag`、`Last-Modified`、`304 Not Modified`、Range 请求
-- Markdown 渲染：基于内置 `Bun.markdown`（CommonMark + GFM 表格 / 删除线 / 任务列表）
-- YAML frontmatter：通过内置 `Bun.YAML` 解析，可用于 `title`、`lang` 等页面元数据
-- 自动标题锚点与侧边目录（TOC），渲染结果按文件 mtime 缓存
-- shiki 代码高亮，内置 light / dark 双主题，未知语言自动降级为普通代码块
-- Mermaid 图表：由本地 mermaid 依赖提供运行时并按需加载，点击图表可打开支持缩放、拖拽的全屏查看器
-- 文件监听 + WebSocket 实时刷新，刷新后保留滚动位置
-- 目录列表、clean URLs、SPA 单页模式、CORS、深色模式切换
-- 页面由 Svelte 5 在浏览器渲染，采用服务端路由 + 客户端渲染（server-routed CSR），React 依赖已移除
+- Static file serving with automatic `Content-Type`, `ETag`, `Last-Modified`, `304 Not Modified`, and Range request support
+- Markdown rendering via built-in `Bun.markdown` (CommonMark + GFM tables, strikethrough, and task lists)
+- YAML frontmatter parsed with built-in `Bun.YAML`, available as page metadata such as `title` and `lang`
+- Automatic heading anchors and a sidebar table of contents (TOC), with rendered output cached by file mtime
+- shiki syntax highlighting with built-in light/dark themes; unknown languages fall back to plain code blocks
+- Mermaid diagrams: the runtime comes from the local mermaid dependency and is loaded on demand; click a diagram to open a fullscreen viewer with zoom and pan
+- File watching + WebSocket live reload, preserving scroll position across reloads
+- Directory listings, clean URLs, SPA single-page fallback, CORS, and dark mode toggle
+- Pages are rendered by Svelte 5 in the browser using server-routed CSR; the React dependency has been removed
 
-## 环境要求
+## Requirements
 
-- Bun >= 1.3.8（`Bun.markdown` 从该版本开始提供）
+- Bun >= 1.3.8 (`Bun.markdown` is available starting from this version)
 
-## 安装
+## Installation
 
 ```bash
-# 全局安装
+# Global install
 bun add -g serve-markdown
 
-# 或者直接运行
+# Or run directly
 bunx serve-markdown ./docs
 ```
 
-## 使用
+## Usage
 
 ```bash
 serve-markdown [directory] [options]
 ```
 
-常用示例：
+Common examples:
 
 ```bash
-serve-markdown ./docs                  # 在 3000 端口托管 ./docs
-serve-markdown . -l 8080 --open        # 指定端口并打开浏览器
-serve-markdown ./public -s --cors      # SPA 模式并开启 CORS
-serve-markdown ./docs --theme dark     # 默认深色主题
+serve-markdown ./docs                  # Host ./docs on port 3000
+serve-markdown . -l 8080 --open        # Use a specific port and open the browser
+serve-markdown ./public -s --cors      # SPA mode with CORS enabled
+serve-markdown ./docs --theme dark     # Dark theme by default
 ```
 
-### CLI 参数
+### CLI options
 
-| 参数 | 说明 |
+| Option | Description |
 | --- | --- |
-| `-l, --listen <port\|host:port>` | 监听端口或地址，默认 `3000` |
-| `-o, --open` | 启动后打开默认浏览器 |
-| `-s, --single` | 未匹配的路径回退到 `index.html` 或 `index.md`（SPA 模式） |
-| `-c, --cors` | 返回宽松的 CORS 响应头 |
-| `--theme <auto\|light\|dark>` | 默认配色主题，默认 `auto` |
-| `--html <filter\|allow\|off>` | Markdown 中原始 HTML 的处理方式，默认 `filter` |
-| `--math` | 启用 `$inline$` 与 `$$display$$` 数学公式 |
-| `--ignore <name>` | 监听时额外忽略的目录名，可重复 |
-| `--no-live` | 关闭 WebSocket 实时刷新 |
-| `--no-highlight` | 关闭代码高亮 |
-| `--no-mermaid` | 关闭 Mermaid 图表渲染，保留代码块 |
-| `--no-clean-urls` | 关闭 `/page` 到 `page.md` / `page.html` 的解析 |
-| `--no-directory-listing` | 关闭目录列表 |
-| `-v, --version` | 输出版本号 |
-| `-h, --help` | 输出帮助 |
+| `-l, --listen <port\|host:port>` | Port or address to listen on, default `3000` |
+| `-o, --open` | Open the default browser after starting |
+| `-s, --single` | Fall back to `index.html` or `index.md` for unmatched paths (SPA mode) |
+| `-c, --cors` | Send permissive CORS headers |
+| `--theme <auto\|light\|dark>` | Default color theme, default `auto` |
+| `--html <filter\|allow\|off>` | How to handle raw HTML in Markdown, default `filter` |
+| `--math` | Enable `$inline$` and `$$display$$` math |
+| `--ignore <name>` | Extra directory names to ignore while watching; repeatable |
+| `--no-live` | Disable WebSocket live reload |
+| `--no-highlight` | Disable syntax highlighting |
+| `--no-mermaid` | Disable Mermaid rendering and keep code blocks |
+| `--no-clean-urls` | Disable resolving `/page` to `page.md` / `page.html` |
+| `--no-directory-listing` | Disable directory listings |
+| `-v, --version` | Print the version |
+| `-h, --help` | Print help |
 
-### URL 约定
+### URL conventions
 
-- `/docs/page.md` 与 `/docs/page` 都会渲染 `page.md`，相对链接与图片照常工作
-- 在 Markdown 或目录请求后追加 `?raw` 可以查看原始文件
-- 访问目录且缺少结尾 `/` 时会收到 `301` 跳转
-- 以 `.` 开头的隐藏文件不会被提供或列入目录列表
+- `/docs/page.md` and `/docs/page` both render `page.md`; relative links and images keep working
+- Append `?raw` to a Markdown request to view the original file
+- A directory request without a trailing `/` receives a `301` redirect
+- Hidden files and directories starting with `.` are not served or listed
 
-## 架构
+## Architecture
 
 ```plaintext
 src/
-  cli/                 # Commander 参数解析与进程生命周期
-  server/              # Bun 运行时：HTTP、resolve、Markdown、目录、live
+  cli/                 # Commander argument parsing and process lifecycle
+  server/              # Bun runtime: HTTP, resolve, Markdown, directories, live
     config.ts
     constants.ts
     context.ts
@@ -93,18 +95,18 @@ src/
     services/
     routes/
     assets/
-  shared/              # 跨端 API 契约、类型、协议常量
-web/                   # Svelte 5 浏览器应用
-  src/features/        # document、directory、mermaid、theme、live
-  src/components/      # 跨 feature 的展示组件
-  src/lib/             # API client、config、formatting
-  src/live-static.ts   # 静态 HTML 的预构建 live reload
-  src/styles/          # app、markdown、mermaid CSS
-  public/theme-boot.js # 首屏前执行的主题初始化脚本
-test/                  # 集成 fixture 与 Playwright E2E
+  shared/              # Cross-runtime API contracts, types, protocol constants
+web/                   # Svelte 5 browser application
+  src/features/        # document, directory, mermaid, theme, live
+  src/components/      # Cross-feature presentational components
+  src/lib/             # API client, config, formatting
+  src/live-static.ts   # Prebuilt live reload for static HTML
+  src/styles/          # app, markdown, mermaid CSS
+  public/theme-boot.js # Theme bootstrap before first paint
+test/                  # Integration fixtures and Playwright E2E
 ```
 
-依赖方向：
+Dependency direction:
 
 ```plaintext
 cli -> server -> shared
@@ -114,78 +116,78 @@ web -/-> server
 shared -> nothing
 ```
 
-`src/server/` 只能导入 `src/server/` 和 `src/shared/`；`web/` 只能导入 `src/shared/` 和自身。`test/architecture.test.ts` 会扫描 `.ts` 和 `.svelte` 的 import 来校验这些边界。
+`src/server/` may only import `src/server/` and `src/shared/`; `web/` may only import `src/shared/` and itself. `test/architecture.test.ts` scans imports in `.ts` and `.svelte` files to enforce these boundaries.
 
-新代码统一由 `src/cli/index.ts` 启动，`serve-markdown` 和 `serve-md` 都指向这个入口。目录职责、API 契约和功能落点见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
+The CLI entry point is `src/cli/index.ts`; both `serve-markdown` and `serve-md` point to it. See [ARCHITECTURE.md](./ARCHITECTURE.md) (Chinese) for directory responsibilities, the API contract, and where to add features.
 
-## 工作原理
+## How it works
 
 ```mermaid
 flowchart LR
-  Browser[浏览器] -->|GET /docs/guide| Server[Bun server]
-  Server -->|Svelte 壳| Browser
+  Browser[Browser] -->|GET /docs/guide| Server[Bun server]
+  Server -->|Svelte shell| Browser
   Browser -->|GET /__api/page/docs/guide| Server
   Server -->|DocumentPayload| Browser
-  Watcher[fs.watch] -->|WebSocket 广播| Browser
+  Watcher[fs.watch] -->|WebSocket reload| Browser
 ```
 
-请求进入 `Bun.serve` 后：
+After a request reaches `Bun.serve`:
 
-1. 用 `resolveRequest` 做路径解析与安全校验（防目录穿越、防隐藏文件、解析符号链接后仍在根目录内）
-2. Markdown 和目录路由返回同一个 Svelte 壳；静态文件、静态 HTML、`?raw` 仍由服务端直接返回
-3. Svelte 根据 `location.pathname` 请求 `/__api/page/<path>`，拿到 `title`、`html`、`toc`、`mermaid`、`breadcrumbs` 等页面数据
-4. Markdown 正文、TOC、shiki 高亮由服务端生成；页面结构、主题、目录页、错误页、Mermaid 查看器由 Svelte 渲染
-5. `fs.watch` 逐个监听目录（跳过 `node_modules`、`.git` 等），变更经 80ms 防抖后通过 WebSocket 通知浏览器刷新
+1. `resolveRequest` performs path resolution and security checks (path traversal, hidden files, and symlinks that escape the root)
+2. Markdown and directory routes return the same Svelte shell; static files, static HTML, and `?raw` responses are still served directly
+3. Svelte reads `location.pathname` and requests `/__api/page/<path>` to get page data such as `title`, `html`, `toc`, `mermaid`, and `breadcrumbs`
+4. Markdown content, TOC, and shiki highlighting are generated on the server; page structure, theme, directory pages, error pages, and the Mermaid viewer are rendered by Svelte
+5. `fs.watch` watches directories individually (skipping `node_modules`, `.git`, and similar), debounces changes for 80ms, and notifies the browser over WebSocket
 
-每次导航都是一次完整页面请求，不使用前端 router。Mermaid 运行时只在文档包含图表时按需加载；静态 HTML 的 live reload 现在由预构建的 `/__app/live-static.js` 提供，不再注入内联脚本。
+Every navigation is a full page request; there is no client-side router. The Mermaid runtime is loaded only when a document contains diagrams. Static HTML live reload is provided by the prebuilt `/__app/live-static.js` instead of an inline script.
 
-## 与 vercel `serve` 的差异
+## Differences from vercel `serve`
 
-已经覆盖的能力：
+Already covered:
 
-- 静态文件与目录列表
-- clean URLs（扩展名省略）
-- SPA 单页回退（`-s`）
-- CORS（`-c`）
-- 文件条件请求与 Range 请求
+- Static files and directory listings
+- Clean URLs (extension omitted)
+- SPA fallback (`-s`)
+- CORS (`-c`)
+- Conditional requests and Range requests
 
-暂未实现的能力：
+Not implemented yet:
 
-- `rewrites` / `redirects` / `headers` 配置文件
-- gzip / brotli 压缩
-- 自定义 404 模板（`404.html`）
-- HTTPS 证书参数
+- `rewrites` / `redirects` / `headers` configuration
+- gzip / brotli compression
+- Custom `404.html` templates
+- HTTPS certificate options
 
-## Markdown 支持情况
+## Markdown support
 
-- 默认开启 GFM 表格、删除线、任务列表、自动链接
-- 默认使用 GFM tag filter 过滤 `<script>`、`<style>`、`<iframe>` 等危险标签；`<details>` 等正常 HTML 会保留
-- `--html off` 会完全禁用原始 HTML，`--html allow` 则不做任何过滤
-- `mermaid` 代码块会渲染为图表：点击图表打开全屏查看器，支持滚轮 / 双指缩放、拖拽平移、`Fit` 重置与键盘操作。Mermaid 运行时来自本地依赖，不依赖外网；不需要图表时可加 `--no-mermaid` 保留源码代码块
-- 数学公式默认关闭（终端文档里的 `$HOME`、`$5` 不会被误判），需要时加 `--math`
-- frontmatter 使用 YAML，非对象或非法 YAML 会在页面顶部显示警告而不会导致服务崩溃
+- GFM tables, strikethrough, task lists, and autolinks are enabled by default
+- The GFM tag filter removes dangerous tags such as `<script>`, `<style>`, and `<iframe>` by default; normal HTML such as `<details>` is preserved
+- `--html off` disables raw HTML entirely; `--html allow` performs no filtering
+- `mermaid` code fences render as diagrams: click a diagram to open a fullscreen viewer with wheel/pinch zoom, drag-to-pan, `Fit` reset, and keyboard controls. The Mermaid runtime comes from the local dependency and does not require internet access; use `--no-mermaid` to keep source code blocks
+- Math is off by default (so `$HOME` and `$5` in terminal docs are not misdetected); enable it with `--math`
+- Frontmatter uses YAML; non-object or invalid YAML shows a warning at the top of the page instead of crashing the server
 
-## 安全提示
+## Security
 
-默认监听 `0.0.0.0`，局域网内可访问，并且会按原样提供所服务目录中的文件。请勿用它托管包含密钥的目录。Markdown 中的原始 HTML 默认只做 GFM 过滤，如果要对外暴露，建议使用 `--html off`。
+The server listens on `0.0.0.0` by default and is reachable on the local network. It serves files from the target directory as-is. Do not use it to host a directory containing secrets. Raw HTML in Markdown is only GFM-filtered by default; if you expose the server more broadly, prefer `--html off`.
 
-## 开发
+## Development
 
 ```bash
 bun install
-bun run build                    # 构建 Svelte Web 应用（web/dist）
+bun run build                    # Build the Svelte web app (web/dist)
 bun run test                     # Bun + Vitest
-bun run test:server              # Bun：server、shared 与 API/parity
-bun run test:web                 # Vitest：Svelte 组件与浏览器逻辑
-bun run test:e2e                 # Playwright：真实浏览器 E2E
+bun run test:server              # Bun: server, shared, API/parity
+bun run test:web                 # Vitest: Svelte components and browser logic
+bun run test:e2e                 # Playwright: real-browser E2E
 bun run typecheck                # tsc + svelte-check
 bun run check                    # Biome + Prettier
-bun run start example/docs       # 启动服务（需要先 build）
-bun run dev                      # 以 watch 模式启动服务
-bun run dev:web                  # Vite build --watch，开发 UI 时与 dev 同时运行
+bun run start example/docs       # Start the server (requires a build first)
+bun run dev                      # Start the server in watch mode
+bun run dev:web                  # Vite build --watch; run alongside dev for UI work
 ```
 
-Playwright 首次运行前需要安装浏览器：`bunx playwright install --with-deps chromium`。WSL2 下 headless 模式不需要 X server，可以直接运行；headed 模式需要 WSLg。没有系统依赖时也可以用 Docker 运行：
+Playwright requires browsers to be installed first: `bunx playwright install --with-deps chromium`. On WSL2, headless mode does not need an X server; headed mode requires WSLg. If system dependencies are unavailable, run E2E with Docker:
 
 ```bash
 docker run --rm --ipc=host \
@@ -194,18 +196,18 @@ docker run --rm --ipc=host \
   bash -lc 'bun install --frozen-lockfile && bunx playwright install --with-deps chromium && bun run test:e2e'
 ```
 
-项目放在 Linux 文件系统（如 `/home/...`）可以获得更好的文件监听性能。
+Keeping the project on the Linux filesystem (for example `/home/...`) provides better file-watching performance.
 
-测试遵循 colocate 约定：Markdown 渲染在 `src/server/markdown/render.test.ts`，路径安全在 `src/server/resolve/path.test.ts`，API 和 parity 在 `src/server/routes/`，Svelte 组件在 `web/src/**/*.test.ts`。`web/` 使用 Vitest；`bunfig.toml` 已将 `web/**` 和 `test/e2e/**` 从 `bun test` 中排除，完整测试请用 `bun run test`，E2E 用 `bun run test:e2e`。
+Tests are colocated with code: Markdown rendering lives in `src/server/markdown/render.test.ts`, path security in `src/server/resolve/path.test.ts`, API and parity tests in `src/server/routes/`, and Svelte component tests in `web/src/**/*.test.ts`. `web/` uses Vitest; `bunfig.toml` excludes `web/**` and `test/e2e/**` from `bun test`. Use `bun run test` for the full unit suite and `bun run test:e2e` for E2E.
 
-仓库中的 `example/docs` 是一个可直接运行的示例目录。纯静态 HTML 的 live reload 使用 `web/src/live-static.ts` 构建出的 `/__app/live-static.js`；新 Svelte 页面使用 `web/src/features/live/live.ts`。
+The `example/docs` directory is a ready-to-run sample. Static HTML live reload uses `/__app/live-static.js`, built from `web/src/live-static.ts`; the Svelte app uses `web/src/features/live/live.ts`.
 
 ## Roadmap
 
-- gzip / brotli 压缩（`Bun.gzipSync`）
-- `serve.json` 风格的 `rewrites` / `redirects` / `headers`
-- 更多 Markdown 扩展
-- 内置全文搜索
+- gzip / brotli compression (`Bun.gzipSync`)
+- `serve.json`-style `rewrites` / `redirects` / `headers`
+- More Markdown extensions
+- Built-in full-text search
 
 ## License
 

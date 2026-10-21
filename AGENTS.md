@@ -192,7 +192,7 @@ docker run --rm --ipc=host \
 - TypeScript 严格模式，`verbatimModuleSyntax`：类型导入使用 `import type`。
 - 服务端相对导入保留 `.ts` 后缀；Web 使用 `@shared` 和 `$lib` 别名，跟随现有文件。
 - TS/JSON/CSS/HTML 用 Biome；Svelte 用 Prettier + `prettier-plugin-svelte`。不要用 Biome 格式化 `.svelte`。
-- 代码注释用英文，README/ARCHITECTURE 用中文。
+- 代码注释用英文；`README.md` 用英文，`README_CN.md` / `ARCHITECTURE.md` 用中文。
 - 保持模块聚焦。一个文件承担多个职责时优先拆分；Mermaid 的 `load/render/viewport/viewer/diagram` 就是参照。
 - 不要新增 React、旧 SSR、内联脚本或前端 router。
 - 不要用 `{@html}` 插入未受信任的内容。合法边界只有 Markdown 正文、Mermaid SVG 和 shell config JSON。

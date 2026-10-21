@@ -12,6 +12,7 @@
     "web/dist",
     "!src/**/*.test.ts",
     "README.md",
+    "README_CN.md",
     "ARCHITECTURE.md",
     "LICENSE"
   ],
