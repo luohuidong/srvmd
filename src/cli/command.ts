@@ -2,7 +2,7 @@ import { Command } from "commander";
 import pkg from "../../package.json";
 import { startServer } from "../server/create-server.ts";
 import { openInBrowser } from "./browser.ts";
-import { installSignalHandlers } from "./lifecycle.ts";
+import { installLifecycleHandlers } from "./lifecycle.ts";
 import { type RawCliOptions, toServerOptions } from "./options.ts";
 import { printStartupReport } from "./report.ts";
 
@@ -35,6 +35,9 @@ export function createCommand(): Command {
     .action(async (directory: string, raw: RawCliOptions) => {
       const options = toServerOptions(directory, raw);
       const running = await startServer(options);
+      // Installed right after the listener exists: `--open` can block in the
+      // browser launcher, and a signal arriving there would skip cleanup.
+      installLifecycleHandlers(() => running.close());
 
       printStartupReport({
         root: running.root,
@@ -51,6 +54,5 @@ export function createCommand(): Command {
       });
 
       if (raw.open) await openInBrowser(running.url);
-      installSignalHandlers(() => running.close());
     });
 }

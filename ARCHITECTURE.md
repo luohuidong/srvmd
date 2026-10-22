@@ -42,7 +42,24 @@ flowchart TB
 - `server` 可以使用 Bun 和 Node API，不导入 `web` 源码，不访问 DOM。
 - `web` 可以使用 DOM 和浏览器 API，不导入 `server` 源码，不读文件系统。
 - `shared` 只包含类型、契约和常量，不依赖任何运行时。
-- `cli` 只负责进程边界：解析参数、启动服务器、输出、信号。
+- `cli` 只负责进程边界：解析参数、启动服务器、输出、信号，以及跟随终端和父进程退出。
+
+## 进程生命周期
+
+`src/cli/lifecycle.ts` 决定服务器何时退出，三条触发路径最终都走同一个 `shutdown`：
+
+| 触发 | 机制 | 备注 |
+| --- | --- | --- |
+| `Ctrl+C`、`SIGTERM`、`SIGHUP` | 信号处理器 | 注册后覆盖继承来的 `SIG_IGN`（`nohup`、部分终端启动器） |
+| 终端关闭 | 每秒 `readlink /proc/self/fd/{0,1,2}` | 仅 Linux，其他平台没有 `/proc` |
+| 父进程消失 | 每秒比对 `process.ppid` | 只覆盖启动之后父进程才消失的情况 |
+
+约定：
+
+- `shutdown` 先 `running.close()`，再 `process.exit(0)`；重复信号只生效一次。
+- 处理器紧跟 `startServer` 安装，`--open` 等可能阻塞的操作不能挡在中间。
+- 启动时就已是孤儿（reaper 或容器 `PID 1` 为父进程）无法与 supervisor 拉起区分，因此不做处理；要常驻请用 systemd、Docker 等 supervisor。
+- 因为信号处理器覆盖了 `SIG_IGN`，`nohup` 和 `setsid` 都不能让服务脱离终端存活。
 
 ## 目录职责
 

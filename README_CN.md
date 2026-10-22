@@ -76,6 +76,16 @@ srvmd ./docs --theme dark     # 默认深色主题
 - 访问目录且缺少结尾 `/` 时会收到 `301` 跳转
 - 以 `.` 开头的隐藏文件不会被提供或列入目录列表
 
+### 进程生命周期
+
+`srvmd` 在前台运行，随启动它的进程一起退出：
+
+- `Ctrl+C`、`SIGTERM` 和 `SIGHUP`（关闭终端、杀掉 tmux 会话、SSH 连接断开）会触发干净退出
+- 启动它的 shell 或 `bun run` 包装进程退出后，服务会在一秒左右跟着退出
+- 启动时启动它的 shell 已经不在了，或父进程本身就是 supervisor、容器 `PID 1` 时，服务会被保留而不做猜测
+
+需要服务脱离终端长期存活时，请交给 supervisor（systemd、Docker、保持存活的 tmux 会话）。`nohup` 和 `setsid` 并不够用：信号处理器会覆盖被忽略的挂断信号，tty 轮询仍会发现终端已关闭。
+
 ## 架构
 
 ```plaintext

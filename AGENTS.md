@@ -58,7 +58,7 @@ web -/-> server
 shared -> nothing
 ```
 
-- `src/cli/` 只负责参数解析、启动、输出和信号。
+- `src/cli/` 只负责参数解析、启动、输出、信号和进程生命周期（见 `ARCHITECTURE.md` 的“进程生命周期”）。
 - `src/server/` 可以使用 Bun/Node API，不能导入 `web/` 或 `cli/`。
 - `web/` 可以使用 DOM/浏览器 API，不能导入 `server/`、`cli/`、`node:*` 或使用 `Bun`。
 - `src/shared/` 只放跨端契约、类型、常量，不依赖任何运行时。
@@ -69,7 +69,7 @@ shared -> nothing
 
 ```plaintext
 src/
-  cli/                 Commander CLI、启动、输出、信号
+  cli/                 Commander CLI、启动、输出、生命周期
   server/              Bun 运行时
     config.ts          ServeMarkdownOptions -> ResolvedConfig
     constants.ts       服务端常量

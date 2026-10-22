@@ -76,6 +76,16 @@ srvmd ./docs --theme dark     # Dark theme by default
 - A directory request without a trailing `/` receives a `301` redirect
 - Hidden files and directories starting with `.` are not served or listed
 
+### Process lifecycle
+
+`srvmd` runs in the foreground and stops with whatever started it:
+
+- `Ctrl+C`, `SIGTERM` and `SIGHUP` (closing the terminal, killing the tmux session, dropping the SSH connection) shut it down cleanly
+- When the launching shell or `bun run` wrapper exits, the server follows within about a second
+- A server whose launcher is already gone at startup, or whose parent is a supervisor or container `PID 1`, is left running instead of guessing
+
+Use a supervisor (systemd, Docker, a tmux session that stays alive) when the server has to outlive the terminal. `nohup` and `setsid` are not enough: the handlers override the ignored hangup, and the tty watch still notices the closed terminal.
+
 ## Architecture
 
 ```plaintext
