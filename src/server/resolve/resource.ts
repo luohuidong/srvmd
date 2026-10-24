@@ -1,5 +1,5 @@
 import { extname } from "node:path";
-import { CLEAN_URL_SUFFIXES } from "../constants.ts";
+import { CLEAN_URL_SUFFIXES } from "../../shared/constants.ts";
 import { isHtmlFile, isMarkdownFile } from "../file-kinds.ts";
 import type { ResolvedPath } from "../types.ts";
 import { resolveRequest } from "./path.ts";

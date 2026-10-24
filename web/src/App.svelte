@@ -7,7 +7,11 @@
   import DirectoryPage from "./features/directory/DirectoryPage.svelte";
   import DocumentPage from "./features/document/DocumentPage.svelte";
   import ErrorView from "./features/error/ErrorView.svelte";
-  import { connectLive } from "./features/live/live.ts";
+  import {
+    connectLive,
+    isPageAffected,
+    isStylesheet,
+  } from "./features/live/live.ts";
   import MermaidViewer from "./features/mermaid/MermaidViewer.svelte";
   import { closeViewer } from "./features/mermaid/viewer.svelte.ts";
 
@@ -19,6 +23,7 @@
   let state = $state<AppState>({ status: "loading" });
   let request: AbortController | null = null;
   let revision = 0;
+  let etag: string | null = null;
 
   const path = window.location.pathname;
 
@@ -46,8 +51,18 @@
     if (!background) state = { status: "loading" };
 
     try {
-      const page = await fetchPage(path, controller.signal);
+      const result = await fetchPage(path, {
+        signal: controller.signal,
+        etag: state.status === "ready" ? etag : null,
+      });
       if (current !== revision) return;
+      if (result.status === "not-modified") {
+        etag = result.etag ?? etag;
+        return;
+      }
+
+      const page = result.page;
+      etag = result.etag;
 
       if (page.kind === "redirect") {
         window.location.replace(page.location);
@@ -70,7 +85,21 @@
     void load();
 
     const disconnect = appConfig.live
-      ? connectLive(() => void load(true))
+      ? connectLive((event) => {
+          // A stylesheet may be linked from raw HTML, so force a full reload
+          // instead of a conditional page-data request.
+          if (event.files.some(isStylesheet)) {
+            window.location.reload();
+            return;
+          }
+
+          const kind = state.status === "ready" ? state.page.kind : null;
+          const affected =
+            appConfig.single || isPageAffected(path, event.files, kind);
+          if (!affected) return;
+
+          void load(true);
+        })
       : undefined;
 
     return () => {

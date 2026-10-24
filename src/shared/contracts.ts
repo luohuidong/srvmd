@@ -39,11 +39,18 @@ export type ApiErrorPayload = {
   };
 };
 
+/** WebSocket live-reload event. Paths are files or directories relative to the served root (POSIX separators). */
+export type LiveReloadEvent = {
+  type: "reload";
+  files: string[];
+};
+
 /** Injected into the Svelte shell so the web app does not need a second config request. */
 export type AppConfig = {
   rootLabel: string;
   version: string;
   theme: Theme;
   live: boolean;
+  single: boolean;
   mermaid: boolean;
 };

@@ -12,6 +12,12 @@ export const LIVE_PATH = "/__serve_md_live";
 /** Prebuilt Mermaid browser runtime, loaded lazily. */
 export const MERMAID_RUNTIME_PATH = "/__serve_md_mermaid.js";
 
+/**
+ * Suffixes tried when resolving extensionless (clean) URLs, in order.
+ * Shared so the browser applies the same URL rules when filtering live events.
+ */
+export const CLEAN_URL_SUFFIXES = [".md", ".markdown", ".html", ".htm"] as const;
+
 /** The shell contains this JSON string token; the server replaces it with a JSON config object. */
 export const CONFIG_TOKEN = '"__SERVE_MD_CONFIG__"';
 

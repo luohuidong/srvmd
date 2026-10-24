@@ -1,5 +1,6 @@
 import type { Highlighter } from "shiki";
 import type { ResolvedConfig } from "./config.ts";
+import { isMarkdownFile } from "./file-kinds.ts";
 import { createHighlighterService, createRenderer, type Renderer } from "./markdown/index.ts";
 import { createDocumentStore, type DocumentStore } from "./services/documents.ts";
 import { createLiveReload, type LiveReload } from "./services/live/index.ts";
@@ -27,7 +28,8 @@ export async function createContext(config: ResolvedConfig): Promise<ServerConte
     ? await createLiveReload({
         root: config.root,
         ignore: config.ignore,
-        onChange: () => documents.clear(),
+        // Directory and stylesheet events never enter the document cache.
+        onChange: files => documents.invalidate(files.filter(isMarkdownFile)),
       })
     : null;
 

@@ -85,6 +85,7 @@ describe("baseline parity", () => {
     const config = shellConfig(html);
 
     expect(config.live).toBe(false);
+    expect(config.single).toBe(false);
     expect(config.mermaid).toBe(true);
     expect(config.theme).toBe("auto");
     expect(config.rootLabel.length).toBeGreaterThan(0);

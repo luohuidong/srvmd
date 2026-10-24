@@ -19,6 +19,7 @@ export function appConfig(config: ResolvedConfig): AppConfig {
     version: config.version,
     theme: config.theme,
     live: config.live,
+    single: config.single,
     mermaid: config.mermaid,
   };
 }

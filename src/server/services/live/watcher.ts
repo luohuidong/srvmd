@@ -1,7 +1,7 @@
 import { type Dirent, type FSWatcher, watch } from "node:fs";
-import { readdir } from "node:fs/promises";
+import { readdir, stat } from "node:fs/promises";
 import { dirname, join, sep } from "node:path";
-import { IGNORED_NAMES, WATCH_DEBOUNCE_MS, WATCHED_EXTENSIONS } from "../../constants.ts";
+import { IGNORED_NAMES, WATCH_DEBOUNCE_MS, WATCH_MAX_WAIT_MS, WATCHED_EXTENSIONS } from "../../constants.ts";
 
 export type Watcher = {
   close(): void;
@@ -25,21 +25,61 @@ export async function createWatcher(options: WatcherOptions): Promise<Watcher> {
   const watchers = new Map<string, FSWatcher>();
   const pending = new Set<string>();
   let timer: ReturnType<typeof setTimeout> | undefined;
+  let maxTimer: ReturnType<typeof setTimeout> | undefined;
+  let deadline = 0;
   let closed = false;
 
   const shouldIgnore = (name: string) => name.startsWith(".") || ignored.has(name);
 
   function flush(): void {
+    if (timer) clearTimeout(timer);
+    if (maxTimer) clearTimeout(maxTimer);
     timer = undefined;
-    if (pending.size === 0) return;
-    const files = [...pending];
+    maxTimer = undefined;
+    if (closed || pending.size === 0) return;
+    const changed = [...pending];
     pending.clear();
-    options.onChange(files);
+    options.onChange(changed);
   }
 
   function schedule(): void {
+    if (maxTimer === undefined) {
+      deadline = Date.now() + WATCH_MAX_WAIT_MS;
+      maxTimer = setTimeout(flush, WATCH_MAX_WAIT_MS);
+    }
+
     if (timer) clearTimeout(timer);
-    timer = setTimeout(flush, WATCH_DEBOUNCE_MS);
+    const remaining = Math.max(0, deadline - Date.now());
+    timer = setTimeout(flush, Math.min(WATCH_DEBOUNCE_MS, remaining));
+  }
+
+  function enqueue(path: string): void {
+    pending.add(path);
+    schedule();
+  }
+
+  /**
+   * `rename` covers create, delete and move without saying which. Watched file
+   * extensions are reported directly; anything else is checked against the
+   * filesystem so a new directory also refreshes the listings that show it.
+   * Deletions are reported from `reconcile`, which still knows the dropped
+   * watchers.
+   */
+  function handleRenameTarget(target: string, name: string): void {
+    if (watchers.has(target) || WATCHED_EXTENSIONS.test(name)) {
+      enqueue(target);
+      return;
+    }
+
+    void stat(target).then(
+      info => {
+        if (closed || !info.isDirectory()) return;
+        enqueue(target);
+      },
+      () => {
+        // Already gone: nothing new to watch or report.
+      },
+    );
   }
 
   async function addDirectory(directory: string): Promise<void> {
@@ -55,10 +95,16 @@ export async function createWatcher(options: WatcherOptions): Promise<Watcher> {
       const watcher = watch(directory, (event, filename) => {
         if (closed) return;
         const name = filename?.toString();
-        if (event === "rename") void reconcile(directory);
+
+        if (event === "rename") {
+          void reconcile(directory);
+          if (!name || shouldIgnore(name)) return;
+          handleRenameTarget(join(directory, name), name);
+          return;
+        }
+
         if (!name || shouldIgnore(name) || !WATCHED_EXTENSIONS.test(name)) return;
-        pending.add(join(directory, name));
-        schedule();
+        enqueue(join(directory, name));
       });
       watcher.on("error", () => {
         watcher.close();
@@ -76,11 +122,12 @@ export async function createWatcher(options: WatcherOptions): Promise<Watcher> {
     }
   }
 
-  function removeWatcherTree(target: string): void {
+  function removeWatcherTree(target: string, report = false): void {
     for (const [watched, watcher] of [...watchers]) {
       if (watched === target || watched.startsWith(target + sep)) {
         watcher.close();
         watchers.delete(watched);
+        if (report) enqueue(watched);
       }
     }
   }
@@ -90,7 +137,7 @@ export async function createWatcher(options: WatcherOptions): Promise<Watcher> {
     if (closed) return;
     const dirents = await readdir(directory, { withFileTypes: true }).catch(() => null);
     if (!dirents) {
-      removeWatcherTree(directory);
+      removeWatcherTree(directory, true);
       return;
     }
 
@@ -107,7 +154,7 @@ export async function createWatcher(options: WatcherOptions): Promise<Watcher> {
     for (const watched of [...watchers.keys()]) {
       if (watched === directory) continue;
       if (dirname(watched) === directory && !childDirs.has(watched)) {
-        removeWatcherTree(watched);
+        removeWatcherTree(watched, true);
       }
     }
   }
@@ -118,7 +165,9 @@ export async function createWatcher(options: WatcherOptions): Promise<Watcher> {
     close() {
       closed = true;
       if (timer) clearTimeout(timer);
+      if (maxTimer) clearTimeout(maxTimer);
       timer = undefined;
+      maxTimer = undefined;
       for (const watcher of watchers.values()) watcher.close();
       watchers.clear();
     },

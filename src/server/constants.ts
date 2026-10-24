@@ -29,5 +29,5 @@ export const MAX_HTML_INJECTION_BYTES = 5 * 1024 * 1024;
 
 export const WATCH_DEBOUNCE_MS = 80;
 
-/** Suffixes tried when resolving extensionless (clean) URLs, in order. */
-export const CLEAN_URL_SUFFIXES = [".md", ".markdown", ".html", ".htm"] as const;
+/** Upper bound for a write burst; without it a resetting debounce never fires. */
+export const WATCH_MAX_WAIT_MS = 250;

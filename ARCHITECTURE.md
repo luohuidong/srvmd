@@ -158,11 +158,25 @@ sequenceDiagram
 - 不存在的路径返回壳，HTTP 状态为 404，Svelte 渲染错误页。
 - `-s` 回退到 `index.html` 时仍按用户静态 HTML 返回；回退到 `index.md` 时走 Svelte 壳。
 
+## 实时刷新
+
+- watcher 监听 root 下的每个目录；文件写入和目录增删都会产生事件，事件在 `WATCH_DEBOUNCE_MS` 后合并发送，持续写入时由 `WATCH_MAX_WAIT_MS` 强制 flush。
+- WebSocket 载荷为 `{ type: "reload", files: string[] }`，`files` 是相对 root 的路径（POSIX 分隔符），目录路径不带结尾 `/`。
+- 服务端先 `documents.invalidate()` 再广播，客户端重取时不会命中旧缓存；只有 Markdown 路径会进入文档缓存。
+- 浏览器不会一有事件就重取：`web/src/features/live/live.ts` 用与 resolver 一致的 clean URL 规则判断事件是否影响当前页。目录页对子树变更敏感，文档页只对自身源文件敏感（`/guide/` 上的 `guide/index.md` 不会因 `guide/other.md` 重取），`--single` 模式下全量刷新，CSS 变更触发整页 reload。
+- 条件重取使用 `ETag` / `If-None-Match`；命中 304 时保留当前页面状态。
+- 静态 HTML 页面不参与上述判断，`/__app/live-static.js` 收到任何事件都会整页 reload。
+
+## Page API 的条件请求
+
+`GET /__api/page/*` 返回 `ETag` 并支持 `If-None-Match`（弱比较，支持 `*`）。ETag 由配置项、URL、源文件相对路径和内容 revision 组合而成；页面数据字段变化时必须在 `server/routes/page-api.ts` 的 `documentEtag` / `directoryEtag` 同步，否则条件请求会返回过期的 304。
+
 ## 页面数据契约
 
 ```typescript
 type DocumentPayload = {
   kind: "document";
+  path: string;
   title: string;
   html: string;
   toc: TocItem[];
@@ -175,6 +189,7 @@ type DocumentPayload = {
 
 type DirectoryPayload = {
   kind: "directory";
+  path: string;
   heading: string;
   parentHref?: string;
   entries: DirEntry[];

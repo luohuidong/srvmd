@@ -61,7 +61,7 @@ describe("MermaidViewer", () => {
     });
 
     expect(viewer.open).toBe(true);
-    expect(mocks.renderDiagram).toHaveBeenCalledWith(SOURCE, "light");
+    expect(mocks.renderDiagram).toHaveBeenCalledWith(SOURCE, "light", expect.any(AbortSignal));
     expect(mocks.bindFunctions).toHaveBeenCalledWith(expect.any(Element));
 
     const initialZoom = zoomPercent(container);

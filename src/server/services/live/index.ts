@@ -1,3 +1,4 @@
+import { relative, sep } from "node:path";
 import { createLiveHub, type LiveHub } from "./hub.ts";
 import { createWatcher } from "./watcher.ts";
 
@@ -6,6 +7,7 @@ export type LiveReload = LiveHub;
 export type LiveReloadOptions = {
   root: string;
   ignore?: string[];
+  /** Absolute paths of changed files and directories (directories have no trailing separator). */
   onChange?: (files: string[]) => void;
 };
 
@@ -17,7 +19,7 @@ export async function createLiveReload(options: LiveReloadOptions): Promise<Live
     ignore: options.ignore,
     onChange(files) {
       options.onChange?.(files);
-      hub.broadcast(files);
+      hub.broadcast(files.map(file => relative(options.root, file).split(sep).join("/")));
     },
   });
 

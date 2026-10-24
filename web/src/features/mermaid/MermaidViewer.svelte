@@ -272,12 +272,13 @@
     if (!isOpen) return;
 
     const current = ++token;
+    const controller = new AbortController();
     loading = true;
     error = "";
     svg = "";
     view = null;
 
-    renderDiagram(source, currentTheme)
+    renderDiagram(source, currentTheme, controller.signal)
       .then((result) => {
         if (current !== token) return;
 
@@ -297,13 +298,14 @@
         });
       })
       .catch((cause) => {
-        if (current !== token) return;
+        if (current !== token || controller.signal.aborted) return;
         loading = false;
         error = messageOf(cause);
       });
 
     return () => {
       if (current === token) token++;
+      controller.abort();
     };
   });
 

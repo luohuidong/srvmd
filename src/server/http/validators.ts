@@ -19,15 +19,26 @@ export function applyValidators(headers: Headers, validators: Validators): void 
   headers.set("Accept-Ranges", "bytes");
 }
 
+/** Compare an If-None-Match header with a weak ETag (or `*`). */
+export function matchesEtag(header: string | null, etag: string): boolean {
+  if (!header) return false;
+
+  const opaque = (value: string) => (value.startsWith("W/") ? value.slice(2) : value);
+  const expected = opaque(etag);
+
+  return header.split(",").some(value => {
+    const candidate = value.trim();
+    return candidate === "*" || opaque(candidate) === expected;
+  });
+}
+
 /**
  * Evaluate If-None-Match first, then If-Modified-Since (the same precedence
  * RFC 9110 requires). Returns true when the client already has this version.
  */
 export function isNotModified(request: Request, validators: Validators, stats: Stats): boolean {
   const noneMatch = request.headers.get("if-none-match");
-  if (noneMatch) {
-    return noneMatch.split(",").some(value => value.trim() === validators.etag);
-  }
+  if (noneMatch) return matchesEtag(noneMatch, validators.etag);
 
   const modifiedSince = request.headers.get("if-modified-since");
   if (!modifiedSince) return false;

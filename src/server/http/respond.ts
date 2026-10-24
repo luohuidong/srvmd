@@ -47,10 +47,18 @@ export function methodNotAllowedResponse(cors: boolean): Response {
   return new Response("Method Not Allowed", { status: 405, headers });
 }
 
-function bodyResponse(body: string, status: number, method: string, cors: boolean, contentType: string): Response {
+function bodyResponse(
+  body: string,
+  status: number,
+  method: string,
+  cors: boolean,
+  contentType: string,
+  etag?: string,
+): Response {
   const headers = baseHeaders(cors);
   headers.set("Content-Type", contentType);
   headers.set("Cache-Control", "no-store");
+  if (etag) headers.set("ETag", etag);
 
   if (method === "HEAD") {
     headers.set("Content-Length", String(Buffer.byteLength(body)));
@@ -60,8 +68,15 @@ function bodyResponse(body: string, status: number, method: string, cors: boolea
   return new Response(body, { status, headers });
 }
 
-export function jsonResponse(body: unknown, status: number, method: string, cors: boolean): Response {
-  return bodyResponse(JSON.stringify(body), status, method, cors, "application/json; charset=utf-8");
+export function jsonResponse(body: unknown, status: number, method: string, cors: boolean, etag?: string): Response {
+  return bodyResponse(JSON.stringify(body), status, method, cors, "application/json; charset=utf-8", etag);
+}
+
+export function notModifiedResponse(etag: string, cors: boolean): Response {
+  const headers = baseHeaders(cors);
+  headers.set("Cache-Control", "no-store");
+  headers.set("ETag", etag);
+  return new Response(null, { status: 304, headers });
 }
 
 export function jsonError(status: number, message: string, method: string, cors: boolean): Response {

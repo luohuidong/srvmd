@@ -1,4 +1,5 @@
 import type { Server, ServerWebSocket } from "bun";
+import type { LiveReloadEvent } from "../../../shared/contracts.ts";
 
 type Socket = ServerWebSocket<undefined>;
 
@@ -29,7 +30,8 @@ export function createLiveHub(): LiveHub {
       // Clients are read-only; ignore inbound messages.
     },
     broadcast(files) {
-      const payload = JSON.stringify({ type: "reload", files });
+      const event: LiveReloadEvent = { type: "reload", files };
+      const payload = JSON.stringify(event);
       for (const socket of sockets) {
         try {
           socket.send(payload);

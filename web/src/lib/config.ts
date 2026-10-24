@@ -6,6 +6,7 @@ const FALLBACK: AppConfig = {
   version: "0.0.0",
   theme: "auto",
   live: false,
+  single: false,
   mermaid: true,
 };
 

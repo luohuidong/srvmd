@@ -21,6 +21,10 @@ beforeAll(async () => {
 
   await fixture.seed("index.md", "# Home\n");
   await fixture.seed("page.md", "# Page\n\noriginal\n");
+  await fixture.seed("etag.md", "# Etag\n\nbefore\n");
+  await fixture.seed("etag-other.md", "# Other\n");
+  await fixture.seed("etag-config.md", "# Config\n");
+  await fixture.seed("deep/live.md", "# Deep\n\nbefore\n");
   await fixture.seed("diagram.md", "# Diagram\n\n```mermaid\ngraph TD\n  A --> B\n```\n");
   await fixture.seed("live.md", "# Live\n\nbefore\n");
   await fixture.seed("guide/index.md", "# Guide\n\n## One\n\n## Two\n");
@@ -99,6 +103,98 @@ describe("page API", () => {
     const payload = await document("/page");
     expect(payload.kind).toBe("document");
     expect(payload.title).toBe("Page");
+  });
+
+  test("answers conditional document requests with 304", async () => {
+    const first = await fetch(`${base}/__api/page/etag.md`);
+    expect(first.status).toBe(200);
+
+    const etag = first.headers.get("etag");
+    expect(etag).toMatch(/^W\//);
+
+    const cached = await fetch(`${base}/__api/page/etag.md`, {
+      headers: { "if-none-match": etag ?? "" },
+    });
+    expect(cached.status).toBe(304);
+    expect(cached.headers.get("etag")).toBe(etag);
+    expect(cached.headers.get("access-control-allow-origin")).toBe("*");
+    expect(await cached.text()).toBe("");
+  });
+
+  test("answers HEAD conditional requests with 304", async () => {
+    const first = await fetch(`${base}/__api/page/etag-other.md`);
+    const etag = first.headers.get("etag") ?? "";
+
+    const cached = await fetch(`${base}/__api/page/etag-other.md`, {
+      method: "HEAD",
+      headers: { "if-none-match": etag },
+    });
+    expect(cached.status).toBe(304);
+    expect(await cached.text()).toBe("");
+  });
+
+  test("does not accept another document's ETag", async () => {
+    const first = await fetch(`${base}/__api/page/etag-other.md`);
+    const etag = first.headers.get("etag") ?? "";
+
+    const response = await fetch(`${base}/__api/page/page.md`, {
+      headers: { "if-none-match": etag },
+    });
+    expect(response.status).toBe(200);
+    expect(response.headers.get("etag")).not.toBe(etag);
+  });
+
+  test("changes the ETag after a document edit", async () => {
+    const first = await fetch(`${base}/__api/page/etag.md`);
+    const etag = first.headers.get("etag");
+
+    await fixture.seed("etag.md", "# Etag\n\nafter\n");
+
+    const second = await fetch(`${base}/__api/page/etag.md`, {
+      headers: { "if-none-match": etag ?? "" },
+    });
+    expect(second.status).toBe(200);
+    expect(second.headers.get("etag")).not.toBe(etag);
+
+    const payload = (await second.json()) as DocumentPayload;
+    expect(payload.html).toContain("after");
+  });
+
+  test("changes the ETag when rendering options change", async () => {
+    const first = await fetch(`${base}/__api/page/etag-config.md`);
+    const etag = first.headers.get("etag") ?? "";
+
+    const other = await startServer({
+      root: fixture.root,
+      port: 0,
+      hostname: "127.0.0.1",
+      highlight: false,
+      mermaid: false,
+      webRoot: fixture.webRoot,
+    });
+
+    try {
+      const second = await fetch(`${other.url}/__api/page/etag-config.md`, {
+        headers: { "if-none-match": etag },
+      });
+      expect(second.status).toBe(200);
+      expect(second.headers.get("etag")).not.toBe(etag);
+    } finally {
+      other.close();
+    }
+  });
+
+  test("answers conditional directory requests with 304", async () => {
+    const first = await fetch(`${base}/__api/page/listing/`);
+    expect(first.status).toBe(200);
+
+    const etag = first.headers.get("etag");
+    expect(etag).toMatch(/^W\//);
+
+    const cached = await fetch(`${base}/__api/page/listing/`, {
+      headers: { "if-none-match": etag ?? "" },
+    });
+    expect(cached.status).toBe(304);
   });
 
   test("extracts Mermaid sources and emits slots", async () => {
@@ -231,10 +327,41 @@ describe("non-page responses", () => {
       });
 
       expect(payload.type).toBe("reload");
-      expect(payload.files.some(file => file.endsWith("live.md"))).toBe(true);
+      expect(payload.files).toContain("live.md");
+      expect(payload.files.every(file => !file.startsWith("/"))).toBe(true);
 
       const updated = await document("/live.md");
       expect(updated.html).toContain("after");
+    } finally {
+      socket.close();
+    }
+  });
+
+  test("broadcasts nested paths with POSIX separators", async () => {
+    const socket = new WebSocket(`${base.replace(/^http/, "ws")}/__serve_md_live`);
+
+    try {
+      const payload = await new Promise<{ type: string; files: string[] }>((resolve, reject) => {
+        const timer = setTimeout(() => reject(new Error("Timed out waiting for a reload event")), 4000);
+
+        socket.addEventListener("error", () => {
+          clearTimeout(timer);
+          reject(new Error("WebSocket error"));
+        });
+
+        socket.addEventListener("open", () => {
+          void fixture.seed("deep/live.md", "# Deep\n\nafter\n");
+        });
+
+        socket.addEventListener("message", event => {
+          const parsed = JSON.parse(String(event.data)) as { type: string; files: string[] };
+          if (!parsed.files.includes("deep/live.md")) return;
+          clearTimeout(timer);
+          resolve(parsed);
+        });
+      });
+
+      expect(payload.files.every(file => !file.includes("\\"))).toBe(true);
     } finally {
       socket.close();
     }

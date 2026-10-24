@@ -43,7 +43,7 @@ describe("MermaidDiagram", () => {
     });
 
     expect(container.querySelector(".mermaid-canvas svg")).not.toBeNull();
-    expect(mocks.renderDiagram).toHaveBeenCalledWith(SOURCE, "light");
+    expect(mocks.renderDiagram).toHaveBeenCalledWith(SOURCE, "light", expect.any(AbortSignal));
     expect(mocks.bindFunctions).toHaveBeenCalledWith(expect.any(Element));
   });
 
@@ -96,7 +96,7 @@ describe("MermaidDiagram", () => {
     setTheme("dark");
 
     await vi.waitFor(() => {
-      expect(mocks.renderDiagram).toHaveBeenLastCalledWith(SOURCE, "dark");
+      expect(mocks.renderDiagram).toHaveBeenLastCalledWith(SOURCE, "dark", expect.any(AbortSignal));
     });
 
     expect(figure?.getAttribute("data-mermaid-state")).toBe("rendered");

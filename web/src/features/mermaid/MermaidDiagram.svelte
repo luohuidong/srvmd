@@ -21,12 +21,13 @@
     const current = ++token;
     const diagram = source;
     const currentTheme = theme.value;
+    const controller = new AbortController();
 
     status = "pending";
     svg = "";
     error = "";
 
-    renderDiagram(diagram, currentTheme)
+    renderDiagram(diagram, currentTheme, controller.signal)
       .then((result) => {
         if (current !== token) return;
         svg = result.svg;
@@ -38,13 +39,14 @@
         });
       })
       .catch((cause) => {
-        if (current !== token) return;
+        if (current !== token || controller.signal.aborted) return;
         error = messageOf(cause);
         status = "error";
       });
 
     return () => {
       if (current === token) token++;
+      controller.abort();
     };
   });
 

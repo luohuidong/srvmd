@@ -45,7 +45,7 @@ beforeEach(() => {
 
 describe("App", () => {
   test("loads and renders a document page", async () => {
-    mocks.fetchPage.mockResolvedValue(documentPage);
+    mocks.fetchPage.mockResolvedValue({ status: "ok", page: documentPage, etag: null });
 
     const { container } = render(App);
 
@@ -60,7 +60,7 @@ describe("App", () => {
   });
 
   test("renders a directory page", async () => {
-    mocks.fetchPage.mockResolvedValue(directoryPage);
+    mocks.fetchPage.mockResolvedValue({ status: "ok", page: directoryPage, etag: null });
 
     const { container } = render(App);
 
@@ -85,9 +85,9 @@ describe("App", () => {
     expect(container.textContent).toContain("Page not found");
   });
   test("shows a loading state before the page arrives", async () => {
-    let resolvePage!: (page: DocumentPayload) => void;
+    let resolvePage!: (result: { status: "ok"; page: DocumentPayload; etag: string | null }) => void;
     mocks.fetchPage.mockReturnValue(
-      new Promise<DocumentPayload>(resolve => {
+      new Promise<{ status: "ok"; page: DocumentPayload; etag: string | null }>(resolve => {
         resolvePage = resolve;
       }),
     );
@@ -95,7 +95,7 @@ describe("App", () => {
     const { container } = render(App);
     expect(container.textContent).toContain("Loading…");
 
-    resolvePage(documentPage);
+    resolvePage({ status: "ok", page: documentPage, etag: null });
     await vi.waitFor(() => {
       expect(container.querySelector(".markdown-body h1")?.textContent).toBe("Home");
     });
