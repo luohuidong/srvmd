@@ -1,2 +1,0 @@
-[test]
-pathIgnorePatterns = ["web/**", "test/e2e/**"]

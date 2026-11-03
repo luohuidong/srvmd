@@ -3,7 +3,7 @@
 ## Install
 
 ```bash
-bun install
+pnpm install
 ```
 
 ## Config

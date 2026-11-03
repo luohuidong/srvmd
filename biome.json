@@ -1,5 +1,6 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.5.15/schema.json",
+  "root": true,
   "vcs": {
     "enabled": false,
     "clientKind": "git",
@@ -7,23 +8,13 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": [
-      "**",
-      "!example",
-      "!node_modules",
-      "!bun.lock",
-      "!web/dist",
-      "!web/**/*.svelte",
-      "!test-results",
-      "!playwright-report",
-      "!blob-report"
-    ]
+    "includes": ["biome.json", "package.json", "tsconfig.json", "tsconfig.build.json", "vitest.config.ts", "test/**"]
   },
   "formatter": {
     "enabled": true,
     "indentStyle": "space",
     "indentWidth": 2,
-    "lineWidth": 120,
+    "lineWidth": 80,
     "lineEnding": "lf"
   },
   "javascript": {

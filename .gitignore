@@ -1,9 +1,11 @@
-# dependencies (bun install)
+# dependencies (pnpm install)
 node_modules
+.pnpm-store
 
 # output
 out
 dist
+web-dist
 *.tgz
 
 # code coverage
@@ -12,6 +14,8 @@ coverage
 
 # logs
 logs
+.pnpm-debug.log*
+pnpm-debug.log*
 _.log
 report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 
@@ -32,8 +36,3 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 
 # Finder (MacOS) folder config
 .DS_Store
-
-# playwright
-test-results
-playwright-report
-blob-report

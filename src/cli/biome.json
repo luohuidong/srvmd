@@ -1,0 +1,9 @@
+{
+  "$schema": "../../node_modules/@biomejs/biome/configuration_schema.json",
+  "root": false,
+  "extends": "//",
+  "files": {
+    "ignoreUnknown": true,
+    "includes": ["tsconfig.json", "tsconfig.build.json", "**/*.ts"]
+  }
+}

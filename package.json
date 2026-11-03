@@ -1,39 +1,15 @@
 {
   "name": "srvmd",
-  "version": "0.1.2",
-  "description": "Static file server with live-reloading Markdown rendering, built on Bun",
+  "version": "0.2.0",
+  "description": "Static file server with live-reloading Markdown rendering, built on Node",
   "type": "module",
-  "bin": {
-    "srvmd": "src/cli/index.ts"
-  },
-  "files": [
-    "src",
-    "web/dist",
-    "!src/**/*.test.ts",
-    "README.md",
-    "README_CN.md",
-    "ARCHITECTURE.md",
-    "LICENSE"
-  ],
-  "scripts": {
-    "dev": "bun --watch src/cli/index.ts",
-    "dev:web": "vite build --watch --config web/vite.config.ts",
-    "build": "vite build --config web/vite.config.ts",
-    "start": "bun src/cli/index.ts",
-    "test": "bun run test:server && bun run test:web",
-    "test:server": "bun test",
-    "test:web": "vitest run --config web/vitest.config.ts",
-    "test:watch": "vitest --config web/vitest.config.ts",
-    "typecheck": "tsc --noEmit && svelte-check --tsconfig web/tsconfig.json",
-    "check": "biome check . && prettier --check \"web/**/*.svelte\"",
-    "check:fix": "biome check --write . && prettier --write \"web/**/*.svelte\"",
-    "lint": "biome lint .",
-    "format": "biome format --write . && prettier --write \"web/**/*.svelte\"",
-    "prepack": "bun run build",
-    "test:e2e": "playwright test"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/luohuidong/srvmd.git"
   },
   "keywords": [
-    "bun",
+    "node",
     "markdown",
     "static-server",
     "live-reload",
@@ -41,28 +17,69 @@
     "serve-markdown",
     "md"
   ],
-  "license": "MIT",
+  "bin": {
+    "srvmd": "./dist/cli/src/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "README_CN.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
   "engines": {
-    "bun": ">=1.3.8"
+    "node": ">=26"
+  },
+  "scripts": {
+    "build": "pnpm run build:node && pnpm run build:web",
+    "build:node": "tsc -b tsconfig.build.json",
+    "build:web": "vite build --config src/web/vite.config.ts",
+    "dev:web": "vite --config src/web/vite.config.ts",
+    "dev:node": "cross-env SRVMD_DEV_WEB_URL=http://localhost:5180 tsx watch src/cli/src/index.ts",
+    "preview": "node dist/cli/src/index.js",
+    "test": "pnpm run build && pnpm run test:node && pnpm run test:web",
+    "test:node": "pnpm run test:cli && pnpm run test:server && pnpm run test:root",
+    "test:cli": "vitest run --config src/cli/vitest.config.ts",
+    "test:server": "vitest run --config src/server/vitest.config.ts",
+    "test:root": "vitest run",
+    "test:web": "vitest run --config src/web/vitest.config.ts",
+    "test:watch:web": "vitest --config src/web/vitest.config.ts",
+    "typecheck": "tsc -p tsconfig.json && tsc -p src/shared/tsconfig.json && tsc -p src/server/tsconfig.json && tsc -p src/cli/tsconfig.json && svelte-check --workspace src/web --tsconfig tsconfig.json",
+    "check": "biome check . && pnpm run check:svelte",
+    "check:fix": "biome check --write . && pnpm run format:svelte",
+    "check:svelte": "prettier --check \"src/web/**/*.svelte\"",
+    "format:svelte": "prettier --write \"src/web/**/*.svelte\"",
+    "lint": "biome lint .",
+    "format": "biome format --write . && pnpm run format:svelte",
+    "prepack": "pnpm run build && node src/web/scripts/verify-dist.ts"
+  },
+  "dependencies": {
+    "commander": "^15.0.0",
+    "markdown-it": "^15.0.3",
+    "mermaid": "^12.2.0",
+    "mime": "^4.0.7",
+    "shiki": "^4.5.0",
+    "ws": "^8.18.0",
+    "yaml": "^2.8.1"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.15",
-    "@playwright/test": "^1.64.1",
     "@sveltejs/vite-plugin-svelte": "^7.3.1",
     "@testing-library/svelte": "^5.4.2",
-    "@types/bun": "latest",
+    "@types/node": "^26.6.6",
+    "@types/ws": "^8.18.1",
+    "cross-env": "^10.0.0",
     "jsdom": "^30.1.3",
     "prettier": "^3.9.10",
     "prettier-plugin-svelte": "^4.1.1",
     "svelte": "^5.57.2",
     "svelte-check": "^4.7.7",
+    "tsx": "^4.23.15",
     "typescript": "6.0.3",
     "vite": "^8.3.5",
     "vitest": "^5.0.5"
   },
-  "dependencies": {
-    "commander": "^15.0.0",
-    "mermaid": "^12.2.0",
-    "shiki": "^4.5.0"
+  "publishConfig": {
+    "access": "public"
   }
 }

@@ -1,0 +1,5 @@
+# pnpm 12 reads settings here, not from package.json.
+# esbuild (a dev-only dependency of tsx) needs its install script to place the
+# platform binary; every other dependency stays script-free.
+allowBuilds:
+  esbuild: true

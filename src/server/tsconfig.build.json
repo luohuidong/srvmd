@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "noEmit": false,
+    "declaration": true,
+    "declarationMap": false,
+    "sourceMap": false,
+    "outDir": "../../dist/server",
+    "rootDir": ".",
+    "rewriteRelativeImportExtensions": true,
+    "tsBuildInfoFile": "./tsconfig.build.tsbuildinfo"
+  },
+  "references": [{ "path": "../shared/tsconfig.build.json" }],
+  "include": ["src/**/*.ts"],
+  "exclude": ["src/**/*.test.ts", "test/**", "node_modules"]
+}

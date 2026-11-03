@@ -1,32 +1,23 @@
 {
   "compilerOptions": {
-    // Environment setup & latest features
-    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "lib": ["ESNext"],
     "target": "ESNext",
-    "module": "Preserve",
+    "module": "NodeNext",
     "moduleDetection": "force",
-    "allowJs": true,
-    "types": ["bun"],
+    "types": ["node"],
 
-    // Bundler mode
-    "moduleResolution": "bundler",
+    "moduleResolution": "NodeNext",
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "verbatimModuleSyntax": true,
     "noEmit": true,
 
-    // Best practices
     "strict": true,
     "skipLibCheck": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
-    "noImplicitOverride": true,
-
-    // Some stricter flags (disabled by default)
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "noPropertyAccessFromIndexSignature": false
+    "noImplicitOverride": true
   },
-  "include": ["src/**/*.ts", "test/**/*.ts", "playwright.config.ts"],
-  "exclude": ["node_modules", "web", "web/dist"]
+  "include": ["test/**/*.ts", "vitest.config.ts"],
+  "exclude": ["node_modules", "src", "dist"]
 }

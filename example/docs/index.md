@@ -36,7 +36,7 @@ export function greet(name: string): string {
 <details>
 <summary>HTML blocks still work</summary>
 
-The GFM tag filter keeps normal HTML such as `<details>` and `<kbd>`.
+Raw HTML such as `<details>` and `<kbd>` is rendered as-is.
 
 </details>
 
@@ -46,7 +46,7 @@ Press <kbd>Ctrl</kbd> + <kbd>C</kbd> to stop the server.
 
 ```mermaid
 flowchart LR
-  Markdown[Markdown file] --> Render[Bun.markdown]
+  Markdown[Markdown file] --> Render[markdown-it]
   Render --> Browser[Browser]
   Watcher[fs.watch] -->|WebSocket| Browser
 ```
