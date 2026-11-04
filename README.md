@@ -2,6 +2,11 @@
 
 English | [中文](./README_CN.md)
 
+[![npm](https://img.shields.io/npm/v/srvmd.svg)](https://www.npmjs.com/package/srvmd)
+[![node](https://img.shields.io/badge/node-%3E%3D26-brightgreen)](https://nodejs.org)
+[![CI](https://github.com/luohuidong/srvmd/actions/workflows/ci.yml/badge.svg)](https://github.com/luohuidong/srvmd/actions/workflows/ci.yml)
+[![license](https://img.shields.io/npm/l/srvmd.svg)](./LICENSE)
+
 A static file server built on Node: host a directory like `serve`, but `.md` files are rendered as HTML on demand, and the browser reloads automatically when files change.
 
 ```bash
@@ -214,12 +219,9 @@ The `example/docs` directory is a ready-to-run sample. Static HTML live reload
 uses `/__app/live-static.js`, built from `src/web/src/live-static.ts`; the
 Svelte app uses `src/web/src/features/live/live.ts`.
 
-## Roadmap
+## Release notes
 
-- gzip / brotli compression (`node:zlib`)
-- `serve.json`-style `rewrites` / `redirects` / `headers`
-- More Markdown extensions
-- Built-in full-text search
+Changes are recorded in [GitHub Releases](https://github.com/luohuidong/srvmd/releases).
 
 ## License
 

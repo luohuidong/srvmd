@@ -2,6 +2,11 @@
 
 [English](./README.md) | 中文
 
+[![npm](https://img.shields.io/npm/v/srvmd.svg)](https://www.npmjs.com/package/srvmd)
+[![node](https://img.shields.io/badge/node-%3E%3D26-brightgreen)](https://nodejs.org)
+[![CI](https://github.com/luohuidong/srvmd/actions/workflows/ci.yml/badge.svg)](https://github.com/luohuidong/srvmd/actions/workflows/ci.yml)
+[![license](https://img.shields.io/npm/l/srvmd.svg)](./LICENSE)
+
 基于 Node 的静态文件服务器：像 `serve` 一样托管目录，但浏览 `.md` 文件时会实时渲染成 HTML，文件保存后浏览器自动刷新。
 
 ```bash
@@ -207,12 +212,9 @@ CLI 命令中的内容目录相对仓库根目录，所以 `./example/docs` 指�
 使用 `src/web/src/live-static.ts` 构建出的 `/__app/live-static.js`；新 Svelte
 页面使用 `src/web/src/features/live/live.ts`。
 
-## Roadmap
+## 版本变更
 
-- gzip / brotli 压缩（`node:zlib`）
-- `serve.json` 风格的 `rewrites` / `redirects` / `headers`
-- 更多 Markdown 扩展
-- 内置全文搜索
+变更记录见 [GitHub Releases](https://github.com/luohuidong/srvmd/releases)。
 
 ## License
 
