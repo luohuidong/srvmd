@@ -29,6 +29,7 @@
   "engines": {
     "node": ">=26"
   },
+  "packageManager": "pnpm@12.16.1",
   "scripts": {
     "build": "pnpm run build:node && pnpm run build:web",
     "build:node": "tsc -b tsconfig.build.json",
@@ -83,8 +84,5 @@
     "typescript": "6.0.3",
     "vite": "^8.3.5",
     "vitest": "^5.0.5"
-  },
-  "publishConfig": {
-    "access": "public"
   }
 }
