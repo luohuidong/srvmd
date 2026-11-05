@@ -24,8 +24,7 @@
     "dist",
     "README.md",
     "README_CN.md",
-    "LICENSE",
-    "CHANGELOG.md"
+    "LICENSE"
   ],
   "engines": {
     "node": ">=26"
@@ -44,7 +43,13 @@
     "test:root": "vitest run",
     "test:web": "vitest run --config src/web/vitest.config.ts",
     "test:watch:web": "vitest --config src/web/vitest.config.ts",
-    "typecheck": "tsc -p tsconfig.json && tsc -p src/shared/tsconfig.json && tsc -p src/server/tsconfig.json && tsc -p src/cli/tsconfig.json && svelte-check --workspace src/web --tsconfig tsconfig.json",
+    "typecheck": "pnpm run typecheck:node && pnpm run typecheck:web",
+    "typecheck:node": "pnpm run typecheck:root && pnpm run typecheck:shared && pnpm run typecheck:server && pnpm run typecheck:cli",
+    "typecheck:root": "tsc -p tsconfig.json",
+    "typecheck:shared": "tsc -p src/shared/tsconfig.json",
+    "typecheck:server": "tsc -p src/server/tsconfig.json",
+    "typecheck:cli": "tsc -p src/cli/tsconfig.json",
+    "typecheck:web": "svelte-check --workspace src/web --tsconfig tsconfig.json",
     "check": "biome check . && pnpm run check:svelte",
     "check:fix": "biome check --write . && pnpm run format:svelte",
     "check:svelte": "prettier --check \"src/web/**/*.svelte\"",
