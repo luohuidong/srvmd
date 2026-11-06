@@ -3,6 +3,7 @@
 English | [中文](./README_CN.md)
 
 [![npm](https://img.shields.io/npm/v/srvmd.svg)](https://www.npmjs.com/package/srvmd)
+[![provenance](https://img.shields.io/badge/npm-provenance-blue?logo=npm)](https://www.npmjs.com/package/srvmd)
 [![node](https://img.shields.io/badge/node-%3E%3D26-brightgreen)](https://nodejs.org)
 [![CI](https://github.com/luohuidong/srvmd/actions/workflows/ci.yml/badge.svg)](https://github.com/luohuidong/srvmd/actions/workflows/ci.yml)
 [![license](https://img.shields.io/npm/l/srvmd.svg)](./LICENSE)
@@ -48,8 +49,6 @@ srvmd . -p 8080 --open        # Use a specific port and open the browser
 | `-v, --version` | Print the version |
 | `-h, --help` | Print help |
 
-On WSL, `--open` tries `wslview` (from [wslu](https://github.com/wslutilities/wslu)), then `cmd.exe`, then `explorer.exe`, then `xdg-open`. Installing `wslu` gives the most reliable Windows browser integration.
-
 ### URL conventions
 
 - `/docs/page.md` renders `page.md`; the extension is required
@@ -80,34 +79,6 @@ user-facing package.
 | `src/server` | Node | HTTP, resolve, Markdown, directory and live-reload runtime |
 | `src/shared` | None | Cross-runtime contracts, types and protocol constants |
 | `src/web` | Browser | Svelte 5 browser application; Vite build to `dist/web` |
-
-```plaintext
-src/
-  cli/                 # CLI project
-    src/               # arguments, startup, signals, web path resolution
-  server/              # Node runtime project
-    src/               # config, HTTP, resolve, Markdown, services, routes, assets
-    test/              # Server fixtures
-  shared/              # Cross-runtime contracts project
-    src/               # API contracts, types, protocol constants
-  web/                 # Svelte 5 browser application; configs at project root
-    src/features/      # document, directory, mermaid, theme, live
-    src/components/    # Cross-feature presentational components
-    src/lib/           # API client, formatting
-    src/live-static.ts # Prebuilt live reload for static HTML
-    src/styles/        # app, markdown, mermaid CSS
-    public/theme-boot.js # Theme bootstrap before first paint
-    vite.config.ts     # Vite build/dev config
-    vitest.config.ts   # Browser tests
-
-dist/
-  cli/src/             # Node build; bin entry is dist/cli/src/index.js
-  server/src/
-  shared/src/
-  web/                 # generated Vite build, shipped in the package
-
-test/                  # Repository-level architecture and package tests
-```
 
 Dependency direction:
 

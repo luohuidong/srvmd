@@ -3,6 +3,7 @@
 [English](./README.md) | 中文
 
 [![npm](https://img.shields.io/npm/v/srvmd.svg)](https://www.npmjs.com/package/srvmd)
+[![provenance](https://img.shields.io/badge/npm-provenance-blue?logo=npm)](https://www.npmjs.com/package/srvmd)
 [![node](https://img.shields.io/badge/node-%3E%3D26-brightgreen)](https://nodejs.org)
 [![CI](https://github.com/luohuidong/srvmd/actions/workflows/ci.yml/badge.svg)](https://github.com/luohuidong/srvmd/actions/workflows/ci.yml)
 [![license](https://img.shields.io/npm/l/srvmd.svg)](./LICENSE)
@@ -48,8 +49,6 @@ srvmd . -p 8080 --open        # 指定端口并打开浏览器
 | `-v, --version` | 输出版本号 |
 | `-h, --help` | 输出帮助 |
 
-在 WSL 中，`--open` 会依次尝试 `wslview`（来自 [wslu](https://github.com/wslutilities/wslu)）、`cmd.exe`、`explorer.exe` 和 `xdg-open`。安装 `wslu` 可以获得最可靠的 Windows 浏览器集成。
-
 ### URL 约定
 
 - `/docs/page.md` 渲染 `page.md`，扩展名必须保留
@@ -79,34 +78,6 @@ shared 契约和 Svelte 浏览器应用。它们一起构建、一起发布到�
 | `src/server` | Node | HTTP、resolve、Markdown、目录与 live reload 运行时 |
 | `src/shared` | 无 | 跨端契约、类型与协议常量 |
 | `src/web` | 浏览器 | Svelte 5 浏览器应用；Vite 构建到 `dist/web` |
-
-```plaintext
-src/
-  cli/                 # CLI 项目
-    src/               # 参数、启动、信号、web 路径解析
-  server/              # Node 运行时项目
-    src/               # config、HTTP、resolve、Markdown、services、routes、assets
-    test/              # server 测试 fixture
-  shared/              # 跨端契约项目
-    src/               # 跨端 API 契约、类型、协议常量
-  web/                 # Svelte 5 浏览器应用；配置在项目根，源码在 web/src
-    src/features/      # document、directory、mermaid、theme、live
-    src/components/    # 跨 feature 的展示组件
-    src/lib/           # API client、formatting
-    src/live-static.ts # 静态 HTML 的预构建 live reload
-    src/styles/        # app、markdown、mermaid CSS
-    public/theme-boot.js # 首屏前执行的主题初始化脚本
-    vite.config.ts     # Vite 构建/开发配置
-    vitest.config.ts   # 浏览器测试
-
-dist/
-  cli/src/             # Node 构建产物；bin 入口是 dist/cli/src/index.js
-  server/src/
-  shared/src/
-  web/                 # Vite 生成产物，随 package 发布
-
-test/                  # 仓库级架构与 package 测试
-```
 
 依赖方向：
 
