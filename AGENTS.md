@@ -8,12 +8,12 @@
 
 仓库是**一个** public npm package `srvmd`，内部按运行时拆成四个项目：
 
-| 项目 | 运行时 | 职责 | 项目说明 |
-| --- | --- | --- | --- |
-| `src/cli` | Node | CLI 进程边界 | [src/cli/AGENTS.md](./src/cli/AGENTS.md) |
-| `src/server` | Node | HTTP、resolve、Markdown、目录、live reload | [src/server/AGENTS.md](./src/server/AGENTS.md) |
-| `src/web` | 浏览器 | Svelte 5 UI；Vite 构建到 `dist/web` | [src/web/AGENTS.md](./src/web/AGENTS.md) |
-| `src/shared` | 无 | 跨端契约、类型、协议常量 | [src/shared/AGENTS.md](./src/shared/AGENTS.md) |
+| 项目         | 运行时 | 职责                                       | 项目说明                                       |
+| ------------ | ------ | ------------------------------------------ | ---------------------------------------------- |
+| `src/cli`    | Node   | CLI 进程边界                               | [src/cli/AGENTS.md](./src/cli/AGENTS.md)       |
+| `src/server` | Node   | HTTP、resolve、Markdown、目录、live reload | [src/server/AGENTS.md](./src/server/AGENTS.md) |
+| `src/web`    | 浏览器 | Svelte 5 UI；Vite 构建到 `dist/web`        | [src/web/AGENTS.md](./src/web/AGENTS.md)       |
+| `src/shared` | 无     | 跨端契约、类型、协议常量                   | [src/shared/AGENTS.md](./src/shared/AGENTS.md) |
 
 - 用户侧命令仍然是 `srvmd`，推荐用 `npx srvmd ./docs` 或 `pnpm dlx srvmd ./docs` 直接运行。
 - 四个项目一起构建、一起发布；只有一个版本号，一个根 `package.json`。
@@ -154,12 +154,12 @@ pnpm pack                            # prepack：构建并校验 dist/web
 
 ### 只影响单个项目
 
-| 改动 | 去读 |
-| --- | --- |
-| CLI 参数、启动输出、信号和生命周期 | [src/cli/AGENTS.md](./src/cli/AGENTS.md) |
-| HTTP、路由、resolve、Markdown、目录、live | [src/server/AGENTS.md](./src/server/AGENTS.md) |
-| Svelte 页面、交互、Mermaid、主题、live client | [src/web/AGENTS.md](./src/web/AGENTS.md) |
-| 契约、领域类型、协议常量 | [src/shared/AGENTS.md](./src/shared/AGENTS.md) |
+| 改动                                          | 去读                                           |
+| --------------------------------------------- | ---------------------------------------------- |
+| CLI 参数、启动输出、信号和生命周期            | [src/cli/AGENTS.md](./src/cli/AGENTS.md)       |
+| HTTP、路由、resolve、Markdown、目录、live     | [src/server/AGENTS.md](./src/server/AGENTS.md) |
+| Svelte 页面、交互、Mermaid、主题、live client | [src/web/AGENTS.md](./src/web/AGENTS.md)       |
+| 契约、领域类型、协议常量                      | [src/shared/AGENTS.md](./src/shared/AGENTS.md) |
 
 ## 测试
 
@@ -195,7 +195,7 @@ pnpm pack                            # prepack：构建并校验 dist/web
 - 根 `package.json` 的 `bin.srvmd` 指向 `./dist/cli/src/index.js`；`dist/cli/src/index.js` 保留 `#!/usr/bin/env node`。
 - `build:node` 执行 `tsc -b tsconfig.build.json`，输出 `dist/{shared,server,cli}`；`build:web` 执行 Vite，输出 `dist/web`。
 - `prepack` 执行完整构建，再用 `src/web/scripts/verify-dist.ts` 校验 `dist/web` 完整。
-- `files` 只包含 `dist`、README、README_CN、ARCHITECTURE、LICENSE、CHANGELOG；不发布 `src`、测试或 AGENTS。
+- `files` 只包含 `dist`、README、README_CN、LICENSE；不发布 `src`、测试、AGENTS、ARCHITECTURE 或 CHANGELOG。变更记录只在 GitHub Release 中维护。
 - 发布前执行 `pnpm pack`，确认 tarball 包含 `dist/cli/src/index.js`、`dist/server/src`、`dist/shared/src`、`dist/web`，没有 `src/`、测试或 `web/node_modules`。
 - 不要恢复 `@srvmd/*` 子包或 workspace；旧的 `@srvmd/server`、`@srvmd/web`、`@srvmd/shared` 只作为历史包保留，发版时用 `npm deprecate` 提示合并到 `srvmd`。
 - 版本升级只改根 `package.json`，再执行 `pnpm install` 更新 lockfile。
